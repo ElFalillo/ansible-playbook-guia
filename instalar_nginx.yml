@@ -1,0 +1,31 @@
+---
+- name: Instalar y configurar Nginx en Debian
+  hosts: servidores_web
+  become: true
+
+  tasks:
+    - name: Actualizar la caché de APT
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Instalar Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Crear página web de prueba
+      ansible.builtin.copy:
+        content: |
+          <h1>Laboratorio Ansible</h1>
+          <p>Este servidor ha sido configurado con Ansible.</p>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+
+    - name: Habilitar y arrancar Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
